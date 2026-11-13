@@ -1,0 +1,78 @@
+name: CI/CD Pipeline - Retail Data Drift & Quality
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  validar:
+    name: Validar Calidad de Datos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar pruebas unitarias en memoria (pytest)
+        run: python -m pytest -v
+
+      - name: Validar integridad de archivos físicos de datos
+        run: python src/validador.py
+
+  generar:
+    name: Generar Informes y Dashboard
+    needs: validar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generar reporte de Data Drift y Dashboard estático
+        run: python src/generar_informe.py
+
+      - name: Subir artefacto para GitHub Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public/
+
+  publicar:
+    name: Publicar en GitHub Pages
+    needs: generar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

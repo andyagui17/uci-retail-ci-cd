@@ -1,0 +1,20 @@
+# Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Evidently / artifacts cache
+.evidently/
+
+# Operating System
+.DS_Store
+Thumbs.db

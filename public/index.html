@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UCI Retail - Monitoreo de Datos y Calidad</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #273549;
+            --accent-primary: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --badge-bg: rgba(59, 130, 246, 0.15);
+            --badge-text: #60a5fa;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 860px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge-pipeline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .main-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-box {
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .metric-label {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .action-container {
+            text-align: center;
+            padding: 1rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-compare {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--accent-primary);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.85rem 1.75rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-compare:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 10px -1px rgba(59, 130, 246, 0.5);
+        }
+
+        .metadata-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .metadata-item {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .metadata-item strong {
+            color: #cbd5e1;
+        }
+
+        .commit-tag {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            color: #e2e8f0;
+            font-size: 0.82rem;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge-pipeline">
+                <span class="badge-dot"></span> Pipeline CI/CD Activo
+            </div>
+            <h1>Monitoreo de Calidad y Drift</h1>
+            <p>Plataforma de validación continua y detección de desviaciones en ventas</p>
+        </header>
+
+        <main class="main-card">
+            <div class="card-header">
+                <h2>Último lote publicado</h2>
+                <span class="commit-tag">Commit: local-d</span>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <span class="metric-label">Mes Actual</span>
+                    <span class="metric-value">Octubre 2011</span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Filas Analizadas</span>
+                    <span class="metric-value">12,000</span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Mediana Quantity</span>
+                    <span class="metric-value">3</span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Mediana UnitPrice</span>
+                    <span class="metric-value">$2.08</span>
+                </div>
+            </div>
+
+            <div class="action-container">
+                <a href="informe_drift.html" class="btn-compare">
+                    Comparar lote actual con septiembre
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <div class="metadata-list">
+                <div class="metadata-item">
+                    <strong>Autor:</strong> <span>Equipo de Ingeniería de Datos</span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Fecha de generación:</strong> <span>2026-11-13 23:30:01 UTC</span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Commit de GitHub:</strong> <span class="commit-tag">local-dev-placeholder</span>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>UCI Retail CI/CD &bull; Generado automáticamente con Evidently y GitHub Pages</p>
+        </footer>
+    </div>
+</body>
+</html>
